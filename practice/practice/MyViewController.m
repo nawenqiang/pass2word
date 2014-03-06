@@ -11,9 +11,9 @@
 #import "SettingViewController.h"
 #import "CellData.h"
 #import "MyDetailViewController.h"
-#import "LockViewController.h"
 
-@interface MyViewController ()
+
+@interface MyViewController ()<MyDetailViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *myTableView;
 
 @end
@@ -38,16 +38,11 @@
         _arrayOfCharacters  = [[NSMutableArray alloc] init];
         _isEmpty = NO;
         _totalCustomer = 0;
-         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showPasswordView) name:@"SHOW_PASSWORD_VIEW" object:nil];
+
     }
     return self;
 }
 
-- (void)showPasswordView
-{
-    LockViewController *lockView = [[LockViewController alloc] init];
-    [self presentViewController:lockView animated:NO completion:nil];
-}
 
 - (void)viewDidLoad
 {
@@ -64,6 +59,22 @@
     SettingViewController *settingView = [[SettingViewController alloc] init];
     [self.navigationController pushViewController:settingView animated:YES];
 }
+#pragma mark--MyDetailViewControllerDelegate
+-(void) sendID:(NSInteger) data
+{
+    for (CellData* cd in _myArray)
+    {
+        if(cd.ID == data)
+        {
+            [_myArray removeObjectAtIndex:data];
+            [self updateArrayOfCharacters];
+            _totalCustomer --;
+            self.title = [NSString stringWithFormat:@"所有用户（%d）",_totalCustomer];
+            [_myTableView reloadData];
+        }
+        break;
+    }
+}
 #pragma mark-- add Button
 -(void)add
 {
@@ -75,6 +86,7 @@
 -(void) updateArrayOfCharacters
 {
     _isEmpty = NO;
+    [_arrayOfCharacters removeAllObjects];
     for (CellData *data in _myArray)
     {
         if ([data.name isEqualToString:@""])
@@ -96,7 +108,9 @@
 - (void)setCellData:(CellData *)data;
 {
     [_myArray addObject:data];
+    data.ID = _totalCustomer;
     _totalCustomer ++;
+
     self.title = [NSString stringWithFormat:@"所有用户（%d）",_totalCustomer];
     [self updateArrayOfCharacters];
     [self.myTableView reloadData];
@@ -107,6 +121,15 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [_myTableView reloadData];
+}
+
+
 #pragma mark --  number of section
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -213,13 +236,12 @@
 {
     // Create the next view controller.
     MyDetailViewController *detailViewController = [[MyDetailViewController alloc] init];
-
+    detailViewController.delegate = self;
     [self getTempArray:_myArray andSection:indexPath.section];
     CellData *cData = [_temparray objectAtIndex:indexPath.row];
-//    self.delegate = detailViewController;    // Push the view controller.
+    // Push the view controller.
     [self.navigationController pushViewController:detailViewController animated:YES];
     [detailViewController getData:cData ];
-
 
 }
 

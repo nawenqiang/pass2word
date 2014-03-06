@@ -23,6 +23,9 @@
                     </textView>
                 </subviews>
             </tableViewCellContentView>
+            <connections>
+                <outlet property="detailRemarkTextView" destination="Xn7-Fe-pF3" id="JY9-fA-kKI"/>
+            </connections>
         </tableViewCell>
     </objects>
 </document>

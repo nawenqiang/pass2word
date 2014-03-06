@@ -11,7 +11,7 @@
 #import "LabelTextFieldCell.h"
 #import "RemarkCell.h"
 
-@interface AddViewController ()
+@interface AddViewController ()<UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *addTableView;
 
 @end
@@ -23,19 +23,13 @@
     UITextField *_name;
     UITextField *_account;
     UITextField *_password;
+    UITextView *_remark;
     UITextField *_website;
+    UIEdgeInsets    _old;
 }
 
--(void) getData: (CellData*) data
-{
-    _cellData = data;
-    _isOperator = YES;
-//    _name.text      = data.name;
-//    _account.text   = data.account;
-//    _password.text  = data.password;
-//    _website.text   = data.website;
-}
 
+#pragma mark-- init
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -57,6 +51,7 @@
     UIBarButtonItem *rightBtnItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(save)];
     self.navigationItem.rightBarButtonItem = rightBtnItem;
 }
+
 #pragma mark-- save Button
 -(void) save
 {
@@ -67,10 +62,12 @@
     }
     else
         data = _cellData;
-    data.account    = _account.text;
     data.name       = _name.text;
+    data.account    = _account.text;
+    data.password   = _password.text;
+    data.remark     = _remark.text;
     data.website    = _website.text;
-    data.password   = _password.text;        
+      
     [self.delegate setCellData:data];
 
     [self.navigationController popViewControllerAnimated:YES];
@@ -82,12 +79,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark-- number of section
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    // Return the number of sections.
-    return 4;
-}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -96,6 +87,12 @@
     else
         return 1;
 }
+#pragma mark-- textview delegate
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    textView.contentInset = UIEdgeInsetsMake(0, 20, 0, 0);
+}
+
 #pragma mark-- 绘制Cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -120,7 +117,6 @@
         [cell.avatarImageView addGestureRecognizer:singleTap];
         cell.avatarImageView.userInteractionEnabled = YES;
 
-        
         return cell;
     }
     //账号，密码
@@ -164,7 +160,12 @@
             [tableView registerNib:[UINib nibWithNibName:@"RemarkCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
             cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
         }
-        
+        cell.remarkTextView.delegate = self;
+        _remark = cell.remarkTextView;
+        if(_isOperator)
+        {
+            cell.remarkTextView.text = _cellData.remark;
+        }
         return cell;
     }
     else //if (indexPath.section == 3)
@@ -181,6 +182,10 @@
         cell.contentLabel.text = @"网址:";
         cell.contentField.placeholder = @"网址";
         cell.contentField.text = @"http://";
+        
+        [cell.contentField addTarget:self action:@selector(focusInWebSiteField) forControlEvents:UIControlEventEditingDidBegin];
+        
+         [cell.contentField addTarget:self action:@selector(focusOutWebSiteField) forControlEvents:UIControlEventEditingDidEnd];
         if(_isOperator)
         {
             cell.contentField.text = _cellData.website;
@@ -190,6 +195,7 @@
  //   return nil;
     
 }
+
 #pragma mark --头像点击，换头像
 - (void)handleAvatarTap:(UIGestureRecognizer *)gestureRecognizer
 {
@@ -202,7 +208,7 @@
     
     [actionSheet showInView:self.view];
 }
-
+#pragma mark-- section
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     if(section == 2)
@@ -212,10 +218,16 @@
     return @"";
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    // Return the number of sections.
+    return 4;
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(indexPath.section == 0)
-        return 70;
+        return 80;
     else if(indexPath.section == 2)
         return 80;
     return 40.0;
@@ -227,5 +239,27 @@
         return 1.0;
     }
     return 30.0;
+}
+#pragma mark-- 弹起website
+- (void)focusInWebSiteField
+{
+    _old = self.addTableView.contentInset;
+    self.addTableView.contentInset = UIEdgeInsetsMake(0, 0, 280, 0);
+}
+
+- (void)focusOutWebSiteField
+{
+    self.addTableView.contentInset = _old;
+}
+
+#pragma mark-- selfdefined method
+-(void) getData: (CellData*) data
+{
+    _cellData = data;
+    _isOperator = YES;
+    //    _name.text      = data.name;
+    //    _account.text   = data.account;
+    //    _password.text  = data.password;
+    //    _website.text   = data.website;
 }
 @end

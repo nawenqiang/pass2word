@@ -10,15 +10,15 @@
 #import "CellData.h"
 #import "AddViewController.h"
 
-//@protocol  MyDetailViewControllerDelegate<NSObject>
-//
-//-(void) sendData:(CellData*) data;
-//
-//@end
+@protocol  MyDetailViewControllerDelegate<NSObject>
+
+-(void) sendID:(NSInteger) data;
+
+@end
 
 
 @interface MyDetailViewController : UIViewController<AddViewControllerDelegate>
 
-//@property (weak, nonatomic) id<MyDetailViewControllerDelegate> delegate;
+@property (weak, nonatomic) id<MyDetailViewControllerDelegate> delegate;
 -(void) getData: (CellData*)data;
 @end

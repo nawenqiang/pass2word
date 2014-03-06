@@ -55,11 +55,12 @@
 
         [self.navigationController pushViewController:addvc animated:YES];
         [addvc getData:_cellData];        
-        NSLog(@"f");
+
     }
     else if(buttonIndex == 1)
     {
-        
+        [_delegate sendID:_cellData.ID];
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
 }
 
@@ -146,6 +147,7 @@
             [tableView registerNib:[UINib nibWithNibName:@"DetailRemarkCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
             cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
         }
+        cell.detailRemarkTextView.text = _cellData.remark;
         return cell;
     }
     else if (indexPath.section == 3)

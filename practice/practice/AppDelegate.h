@@ -7,6 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LockViewController.h"
+
+
+
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

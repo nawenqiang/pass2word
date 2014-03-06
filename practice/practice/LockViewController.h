@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LockViewController : UIViewController
 
+
+@interface LockViewController : UIViewController
+-(BOOL) isLock:(BOOL) b;
 @end
