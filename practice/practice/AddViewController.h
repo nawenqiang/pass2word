@@ -9,15 +9,17 @@
 #import <UIKit/UIKit.h>
 #import "CellData.h"
 
-@protocol getDataDelegate <NSObject>
 
-- (void)getCellData:(CellData *)data;
+
+@protocol AddViewControllerDelegate <NSObject>
+
+- (void)setCellData:(CellData *)data;
 
 @end
 
 
 @interface AddViewController : UIViewController
 
-@property (weak, nonatomic) id <getDataDelegate> delegate;
-
+@property (weak, nonatomic) id <AddViewControllerDelegate> delegate;
+-(void) getData: (CellData*) data;
 @end

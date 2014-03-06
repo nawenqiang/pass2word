@@ -10,6 +10,8 @@
 #import "MyTableViewCell.h"
 #import "SettingViewController.h"
 #import "CellData.h"
+#import "MyDetailViewController.h"
+#import "LockViewController.h"
 
 @interface MyViewController ()
 @property (weak, nonatomic) IBOutlet UITableView *myTableView;
@@ -36,8 +38,15 @@
         _arrayOfCharacters  = [[NSMutableArray alloc] init];
         _isEmpty = NO;
         _totalCustomer = 0;
+         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showPasswordView) name:@"SHOW_PASSWORD_VIEW" object:nil];
     }
     return self;
+}
+
+- (void)showPasswordView
+{
+    LockViewController *lockView = [[LockViewController alloc] init];
+    [self presentViewController:lockView animated:NO completion:nil];
 }
 
 - (void)viewDidLoad
@@ -55,6 +64,7 @@
     SettingViewController *settingView = [[SettingViewController alloc] init];
     [self.navigationController pushViewController:settingView animated:YES];
 }
+#pragma mark-- add Button
 -(void)add
 {
     AddViewController *addvc = [[AddViewController alloc] init];
@@ -82,8 +92,8 @@
     }
     [_arrayOfCharacters sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];   //将数组中的值排序
 }
-#pragma mark-- delegate
-- (void)getCellData:(CellData *)data;
+#pragma mark-- addview delegate
+- (void)setCellData:(CellData *)data;
 {
     [_myArray addObject:data];
     _totalCustomer ++;
@@ -97,7 +107,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-#pragma mark --- section numbers
+#pragma mark --  number of section
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     if ([_arrayOfCharacters count])
@@ -112,7 +122,7 @@
         return 1;
     }
 }
-#pragma mark ---  row numbers of every section
+#pragma mark --  row numbers of every section
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     [self getTempArray:_myArray andSection:section];
@@ -192,12 +202,26 @@
         [toBeReturned addObject:[NSString stringWithFormat:@"%c",c]];
     return toBeReturned;
 }
-
+#pragma mark-- 表格height
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 75.0;
 }
 
+#pragma mark -- Table view delegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Create the next view controller.
+    MyDetailViewController *detailViewController = [[MyDetailViewController alloc] init];
+
+    [self getTempArray:_myArray andSection:indexPath.section];
+    CellData *cData = [_temparray objectAtIndex:indexPath.row];
+//    self.delegate = detailViewController;    // Push the view controller.
+    [self.navigationController pushViewController:detailViewController animated:YES];
+    [detailViewController getData:cData ];
+
+
+}
 
 @end
 

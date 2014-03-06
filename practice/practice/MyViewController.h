@@ -9,9 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "AddViewController.h"
 
-@interface MyViewController : UIViewController<getDataDelegate>
 
-@property (weak, nonatomic) id<getDataDelegate> delegate;
+
+@interface MyViewController : UIViewController<AddViewControllerDelegate>
 
 
 @end

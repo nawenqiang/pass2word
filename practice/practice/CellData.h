@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 
 @interface CellData : NSObject
-@property NSString *name,*account,*password;
+@property NSString *name,*account,*password,*remark,*website;
 @end
