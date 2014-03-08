@@ -46,15 +46,15 @@
     {
         NSString * sql = @"select name from  user ";
         FMResultSet * rs = [db executeQuery:sql];
-        if ([rs next])
+        while([rs next])
         {
             NSString *name = [rs stringForColumn:@"name"];
             if([name isEqualToString:data.name])
             {
-                sql = @"delete * from  user where name = ?";
+                sql = @"delete from  user where name = ?";
                 BOOL res = [db executeUpdate:sql,name];
                 if (!res) {
-                    NSLog(@"error to delete db data");
+                    NSLog(@"error to delete db data %@",[db lastError]);
                 } else {
                     NSLog(@"succ to deleta db data");
                 }
@@ -147,22 +147,7 @@
         return 0;
     }
 }
-+(void)query
-{
-    FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
-    if ([db open]) {
-        NSString * sql = @"select * from user";
-        FMResultSet * rs = [db executeQuery:sql];
-        while ([rs next])
-        {
-            int userId = [rs intForColumn:@"id"];
-            NSString * name = [rs stringForColumn:@"name"];
-            NSString * pass = [rs stringForColumn:@"password"];
-            NSLog(@"user id = %d, name = %@, pass = %@", userId, name, pass);
-        }
-        [db close];
-    }
-}
+
 +(void)clearAll
 {
     FMDatabase * db = [FMDatabase databaseWithPath:dbPath];

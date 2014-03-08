@@ -52,10 +52,10 @@
     UIBarButtonItem *rightBtnItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(save)];
     self.navigationItem.rightBarButtonItem = rightBtnItem;
 }
-
 #pragma mark-- save Button
 -(void) save
 {
+
     CellData *data;
     data  = [[CellData alloc] init];
 
@@ -64,7 +64,15 @@
     data.password   = _password.text;
     data.remark     = _remark.text;
     data.website    = _website.text;
-      
+    if (!_isOperator)
+    {
+        if ([data.name isEqualToString:@""])
+        {
+            UIAlertView * av= [[UIAlertView alloc] initWithTitle:@"提示" message:@"名称不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+            [av show];
+            return;
+        }
+    }
     [self.delegate setCellData:data];
 
     [self.navigationController popViewControllerAnimated:YES];

@@ -15,7 +15,7 @@
 +(void)insert:(CellData*) data;
 +(int) getTotalNumbers;
 +(void)createTable;
-+(void)query;
+
 +(void)clearAll;
 +(void)update:(CellData*)target :(CellData*)source ;
 +(void)deleteData:(CellData*)data;

@@ -23,7 +23,6 @@
 {
     NSMutableArray *_temparray;          //section data
     NSMutableArray *_arrayOfCharacters;  //section title
-    BOOL    _isEmpty;
 }
 
 
@@ -34,7 +33,6 @@
     {   // Custom initialization
         _temparray  = [[NSMutableArray alloc] init];
         _arrayOfCharacters  = [[NSMutableArray alloc] init];
-        _isEmpty = NO;
     }
     return self;
 }
@@ -107,9 +105,9 @@
 {
     if ([_arrayOfCharacters count])
     {
-        if(YES == _isEmpty)
-            return [_arrayOfCharacters count] + 1;
-        else
+//        if(YES == _isEmpty)
+//            return [_arrayOfCharacters count] + 1;
+//        else
             return [_arrayOfCharacters count];
     }
     else
@@ -121,7 +119,11 @@
 #pragma mark-- 段的标题
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if([_arrayOfCharacters count]==0 || section >= [_arrayOfCharacters count])
+//    if([_arrayOfCharacters count]==0 || section >= [_arrayOfCharacters count])
+//    {
+//        return @"";
+//    }
+    if([_arrayOfCharacters count]==0 )
     {
         return @"";
     }
@@ -178,6 +180,52 @@
 #pragma mark-- selfdefined method
 -(void)updateTempArray:(NSInteger)section
 {
+//    [_temparray removeAllObjects];
+//    FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
+//    if ([db open])
+//    {
+//        CellData *data;
+//        NSString * sql = @"select * from user";
+//        FMResultSet * rs = [db executeQuery:sql];
+//        while ([rs next])
+//        {
+//            data = [[CellData alloc] init];
+//            NSString *ns = [rs stringForColumn:@"name"];
+//            NSString *at = [rs stringForColumn:@"account"];
+//            NSString *pswd = [rs stringForColumn:@"password"];
+//            NSString *remark = [rs stringForColumn:@"remark"];
+//            NSString *ws = [rs stringForColumn:@"website"];
+//
+//            data.name = ns;
+//            data.account = at;
+//            data.password = pswd;
+//            data.remark = remark;
+//            data.website = ws;
+//            if (section >= [_arrayOfCharacters count] && [ns isEqualToString:@""])
+//            {
+//                [_temparray addObject:data];
+//            }
+//            else if(section < [_arrayOfCharacters count] && ![ns isEqualToString:@""])
+//            {
+//                //title of section
+//                NSString *key = [_arrayOfCharacters objectAtIndex:section];
+//                //get first character
+//                char firstchar = [[ns uppercaseString] characterAtIndex:0];
+//                //convert to NSstring
+//                NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar];
+//                if ([firstcharstring isEqualToString:key])
+//                {
+//                    [_temparray addObject:data];
+//                }
+//            }
+//        }
+//        [db close];
+//    }
+//    else
+//    {
+//        NSLog(@"open db failed");
+//    }
+/////////////
     [_temparray removeAllObjects];
     FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
     if ([db open])
@@ -193,22 +241,21 @@
             NSString *pswd = [rs stringForColumn:@"password"];
             NSString *remark = [rs stringForColumn:@"remark"];
             NSString *ws = [rs stringForColumn:@"website"];
-
+            
             data.name = ns;
             data.account = at;
             data.password = pswd;
             data.remark = remark;
             data.website = ws;
-            if (section >= [_arrayOfCharacters count] && [ns isEqualToString:@""])
+            //title of section
+            NSString *key = [_arrayOfCharacters objectAtIndex:section];
+            char firstchar = [[ns uppercaseString] characterAtIndex:0];
+            if([key isEqualToString:@"#"] && (firstchar >'Z' || firstchar <'A' ))
             {
                 [_temparray addObject:data];
             }
-            else if(section < [_arrayOfCharacters count] && ![ns isEqualToString:@""])
+            else if(![key isEqualToString:@"#"])
             {
-                //title of section
-                NSString *key = [_arrayOfCharacters objectAtIndex:section];
-                //get first character
-                char firstchar = [[ns uppercaseString] characterAtIndex:0];
                 //convert to NSstring
                 NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar];
                 if ([firstcharstring isEqualToString:key])
@@ -223,10 +270,39 @@
     {
         NSLog(@"open db failed");
     }
+    
 }
 -(void) updateArrayOfCharacters
 {
-//    _isEmpty = NO;
+////    _isEmpty = NO;
+//    [_arrayOfCharacters removeAllObjects];
+//    
+//    FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
+//    if ([db open])
+//    {
+//        NSString * sql = @"select name from user";
+//        FMResultSet * rs = [db executeQuery:sql];
+//        while ([rs next])
+//        {
+//            NSString * name = [rs stringForColumn:@"name"];
+//            if ([name isEqualToString:@""])
+//            {
+//                //_isEmpty = YES;
+//                continue;
+//            }
+//            char firstchar = [[name uppercaseString] characterAtIndex:0];//get first character
+//            NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar]; //convert to nsstring
+//
+//            if (![_arrayOfCharacters containsObject:(NSObject *)firstcharstring])
+//            { //if firstchar was contained
+//                [_arrayOfCharacters addObject:firstcharstring];
+//            }
+//        }
+//        [_arrayOfCharacters sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];   //将数组中的值排序
+//        [db close];
+//    }
+//    else
+//        NSLog(@"open db failed");
     [_arrayOfCharacters removeAllObjects];
     
     FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
@@ -237,24 +313,27 @@
         while ([rs next])
         {
             NSString * name = [rs stringForColumn:@"name"];
-//            if ([name isEqualToString:@""])
-//            {
-//                _isEmpty = YES;
-//                continue;
-//            }
             char firstchar = [[name uppercaseString] characterAtIndex:0];//get first character
-            NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar]; //convert to nsstring
-            if (![_arrayOfCharacters containsObject:(NSObject *)firstcharstring])
-            { //if firstchar was contained
-                [_arrayOfCharacters addObject:firstcharstring];
+            if (firstchar <= 'Z' && firstchar >= 'A')
+            {
+                NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar]; //convert to nsstring
+                
+                if (![_arrayOfCharacters containsObject:(NSObject *)firstcharstring])
+                { //if firstchar was contained
+                    [_arrayOfCharacters addObject:firstcharstring];
+                }        
             }
+            else if (![_arrayOfCharacters containsObject:@"#"])
+            {
+                [_arrayOfCharacters addObject:@"#"];
+            }
+
         }
         [_arrayOfCharacters sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];   //将数组中的值排序
         [db close];
     }
     else
         NSLog(@"open db failed");
-
 }
 
 @end

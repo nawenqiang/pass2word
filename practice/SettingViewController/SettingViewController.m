@@ -144,6 +144,7 @@
             NSString *pwd = [_setPasswordAlertView textFieldAtIndex:0].text;
             if ([pwd length])
             {
+                //save password
                 [[NSUserDefaults standardUserDefaults] setObject:pwd forKey:@"mainpassword"];
                 [[NSUserDefaults standardUserDefaults] synchronize];
                 _islk = YES;
