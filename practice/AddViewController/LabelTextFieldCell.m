@@ -27,8 +27,11 @@
 
     // Configure the view for the selected state
 }
+
 - (IBAction)keyboardNext:(id)sender {
+    if (_completion) {
         _completion();
+    }
 }
 
 
@@ -36,4 +39,5 @@
 {
     _completion = completion;
 }
+
 @end

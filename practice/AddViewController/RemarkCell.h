@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface RemarkCell : UITableViewCell
-@property (weak, nonatomic) IBOutlet UITextView *remarkTextView;
+
+@property (weak, nonatomic) IBOutlet UITextField *textField;
+
 - (void)setKeyboardCompletion:(void(^)())completion;
+
 @end

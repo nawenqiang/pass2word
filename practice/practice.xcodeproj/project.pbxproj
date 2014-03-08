@@ -165,7 +165,8 @@
 				0D21669D18C6101200FF4612 /* SettingViewController.m */,
 				0D21669E18C6101200FF4612 /* SettingViewController.xib */,
 			);
-			path = SettingViewController;
+			name = SettingViewController;
+			path = ../SettingViewController;
 			sourceTree = "<group>";
 		};
 		0D37726B18C6BB6300CDD568 /* MyDetailViewController */ = {
@@ -184,17 +185,13 @@
 				0D0F9CD118C737B7007DBD61 /* DetailRemarkCell.m */,
 				0D0F9CCE18C737AC007DBD61 /* DetailRemarkCell.xib */,
 			);
-			path = MyDetailViewController;
+			name = MyDetailViewController;
+			path = ../MyDetailViewController;
 			sourceTree = "<group>";
 		};
 		0D5A470018C57A16007D85FE = {
 			isa = PBXGroup;
 			children = (
-				0DF3449918C979BC00DA0DC6 /* fmdb */,
-				0DC7111518C7048E0052DE96 /* resource */,
-				0D37726B18C6BB6300CDD568 /* MyDetailViewController */,
-				0D21669B18C60FEB00FF4612 /* SettingViewController */,
-				0D5A47B818C5946F007D85FE /* AddViewController */,
 				0D5A471218C57A16007D85FE /* practice */,
 				0D5A472B18C57A16007D85FE /* practiceTests */,
 				0D5A470B18C57A16007D85FE /* Frameworks */,
@@ -226,6 +223,10 @@
 		0D5A471218C57A16007D85FE /* practice */ = {
 			isa = PBXGroup;
 			children = (
+				0DF3449918C979BC00DA0DC6 /* fmdb */,
+				0D37726B18C6BB6300CDD568 /* MyDetailViewController */,
+				0D21669B18C60FEB00FF4612 /* SettingViewController */,
+				0D5A47B818C5946F007D85FE /* AddViewController */,
 				0D5A47AD18C57DBC007D85FE /* MyTableViewCell.h */,
 				0D5A47AE18C57DBC007D85FE /* MyTableViewCell.m */,
 				0D5A478918C57CCF007D85FE /* MyTableViewCell.xib */,
@@ -240,6 +241,7 @@
 				0D8F0D3118C9C1E00090982B /* DataBase.m */,
 				0D5A47B518C591A9007D85FE /* CellData.h */,
 				0D5A47B618C591A9007D85FE /* CellData.m */,
+				0DC7111518C7048E0052DE96 /* resource */,
 				0D5A471318C57A16007D85FE /* Supporting Files */,
 			);
 			path = practice;
@@ -290,7 +292,8 @@
 				0D0F9CCC18C733A7007DBD61 /* RemarkCell.m */,
 				0D0F9CC918C73387007DBD61 /* RemarkCell.xib */,
 			);
-			path = AddViewController;
+			name = AddViewController;
+			path = ../AddViewController;
 			sourceTree = "<group>";
 		};
 		0DC7111518C7048E0052DE96 /* resource */ = {
@@ -300,7 +303,7 @@
 				0D11260818C607BE00CD27D3 /* avatar.png */,
 			);
 			name = resource;
-			path = practice/Images.xcassets/resource;
+			path = Images.xcassets/resource;
 			sourceTree = "<group>";
 		};
 		0DF3449918C979BC00DA0DC6 /* fmdb */ = {
@@ -317,7 +320,8 @@
 				0DF344A218C979BC00DA0DC6 /* FMResultSet.h */,
 				0DF344A318C979BC00DA0DC6 /* FMResultSet.m */,
 			);
-			path = fmdb;
+			name = fmdb;
+			path = ../fmdb;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

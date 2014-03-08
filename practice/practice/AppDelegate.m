@@ -11,17 +11,12 @@
 #import "define.h"
 
 @implementation AppDelegate
-{
-    LockViewController *_lvc;
-}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     //set dabase path
     NSString * doc = PATH_OF_DOCUMENT;
     dbPath = [doc stringByAppendingPathComponent:@"us.sqlite"];
-    
-    _lvc = [[LockViewController alloc] init];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
@@ -45,16 +40,12 @@
 
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    
-}
-
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    if([[NSUserDefaults standardUserDefaults] boolForKey:@"islocked"]) {
+        [self.window.rootViewController presentViewController:[[LockViewController alloc] init] animated:NO completion:nil];
+    }
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-    if([[NSUserDefaults standardUserDefaults] boolForKey:@"islocked"])
-        [self.window.rootViewController presentViewController:_lvc animated:NO completion:nil];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

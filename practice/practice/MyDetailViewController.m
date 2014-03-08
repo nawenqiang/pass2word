@@ -87,13 +87,13 @@
 #pragma mark ---  number of section
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 4;
+    return 3;
 }
 #pragma mark ---  row numbers of every section
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if(section == 1)
-        return 2;
+    if(section == 0)
+        return 3;
     else
         return 1;
 }
@@ -104,20 +104,20 @@
     //头像，名称
     if (indexPath.section == 0)
     {
-        NSString *cellIdentify = @"DatailAvatarAndNameCellIdentify";
-        DatailAvatarAndNameCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
-        if (!cell)
-        {
-            [tableView registerNib:[UINib nibWithNibName:@"DatailAvatarAndNameCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
-            cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
+        if (indexPath.row == 0) {
+            NSString *cellIdentify = @"DatailAvatarAndNameCellIdentify";
+            DatailAvatarAndNameCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
+            if (!cell)
+            {
+                [tableView registerNib:[UINib nibWithNibName:@"DatailAvatarAndNameCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
+                cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
+            }
+            cell.nameLabel.text = _cellData.name;
+            
+            return cell;
         }
-        cell.nameLabel.text = _cellData.name;
         
-        return cell;
-    }
-    //账号，密码
-    else if (indexPath.section == 1)
-    {
+        //账号，密码
         NSString *cellIdentify = @"DatailContentCellIdentify";
         DatailContentCell   *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
         if (!cell)
@@ -125,19 +125,21 @@
             [tableView registerNib:[UINib nibWithNibName:@"DatailContentCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
             cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
         }
-        if (indexPath.row == 0)
+        if (indexPath.row == 1)
         {
             cell.contentLabel.text = _cellData.account;
             cell.infoLabel.text = @"账号";
         }
-        else if (indexPath.row == 1)
+        else if (indexPath.row == 2)
         {
             cell.contentLabel.text = _cellData.password;
             cell.infoLabel.text = @"密码:";
         }
         return cell;
     }
-    else if (indexPath.section == 2)
+    
+    //附加信息
+    else if (indexPath.section == 1)
     {
         NSString *cellIdentify = @"DetailRemarkCellIdentify";
         DetailRemarkCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
@@ -149,7 +151,9 @@
         cell.detailRemarkTextView.text = _cellData.remark;
         return cell;
     }
-    else if (indexPath.section == 3)
+    
+    //网址
+    else if (indexPath.section == 2)
     {
         NSString *cellIdentify = @"DatailContentCellIdentify";
         DatailContentCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
@@ -164,29 +168,37 @@
         return cell;
     }
     return nil;
-    
 }
 
 #pragma mark-- 表格height
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(indexPath.section == 0)
-        return 70;
-    else if(indexPath.section == 2)
+    if(indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            return 70.0;
+        }
+        return 44.0;
+    }
+
+    else if(indexPath.section == 1) {
         return 80;
-    return 40.0;
+    }
+    
+    return 44.0;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if(section == 2)
+    if(section == 1)
     {
         return @"附加信息:";
     }
     return @"";
 }
+
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return nil;
 }
+
 @end

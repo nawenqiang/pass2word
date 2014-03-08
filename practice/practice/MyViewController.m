@@ -146,19 +146,24 @@
     cell.nameLabel.text     = cellData.name;
     cell.accountTextField.text  = cellData.account;
 
-
     return cell;
 }
 
 #pragma mark-- 表格的索引
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
-    NSMutableArray *toBeReturned = [[NSMutableArray alloc]init];
-    for(char c = 'A';c<='Z';c++)
-        [toBeReturned addObject:[NSString stringWithFormat:@"%c",c]];
-    return toBeReturned;
-
+//    NSMutableArray *toBeReturned = [[NSMutableArray alloc]init];
+//    for(char c = 'A';c<='Z';c++)
+//        [toBeReturned addObject:[NSString stringWithFormat:@"%c",c]];
+//    return toBeReturned;
+    return _arrayOfCharacters;
 }
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    return index;
+}
+
 #pragma mark-- 表格height
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -180,52 +185,6 @@
 #pragma mark-- selfdefined method
 -(void)updateTempArray:(NSInteger)section
 {
-//    [_temparray removeAllObjects];
-//    FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
-//    if ([db open])
-//    {
-//        CellData *data;
-//        NSString * sql = @"select * from user";
-//        FMResultSet * rs = [db executeQuery:sql];
-//        while ([rs next])
-//        {
-//            data = [[CellData alloc] init];
-//            NSString *ns = [rs stringForColumn:@"name"];
-//            NSString *at = [rs stringForColumn:@"account"];
-//            NSString *pswd = [rs stringForColumn:@"password"];
-//            NSString *remark = [rs stringForColumn:@"remark"];
-//            NSString *ws = [rs stringForColumn:@"website"];
-//
-//            data.name = ns;
-//            data.account = at;
-//            data.password = pswd;
-//            data.remark = remark;
-//            data.website = ws;
-//            if (section >= [_arrayOfCharacters count] && [ns isEqualToString:@""])
-//            {
-//                [_temparray addObject:data];
-//            }
-//            else if(section < [_arrayOfCharacters count] && ![ns isEqualToString:@""])
-//            {
-//                //title of section
-//                NSString *key = [_arrayOfCharacters objectAtIndex:section];
-//                //get first character
-//                char firstchar = [[ns uppercaseString] characterAtIndex:0];
-//                //convert to NSstring
-//                NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar];
-//                if ([firstcharstring isEqualToString:key])
-//                {
-//                    [_temparray addObject:data];
-//                }
-//            }
-//        }
-//        [db close];
-//    }
-//    else
-//    {
-//        NSLog(@"open db failed");
-//    }
-/////////////
     [_temparray removeAllObjects];
     FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
     if ([db open])
@@ -274,35 +233,6 @@
 }
 -(void) updateArrayOfCharacters
 {
-////    _isEmpty = NO;
-//    [_arrayOfCharacters removeAllObjects];
-//    
-//    FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
-//    if ([db open])
-//    {
-//        NSString * sql = @"select name from user";
-//        FMResultSet * rs = [db executeQuery:sql];
-//        while ([rs next])
-//        {
-//            NSString * name = [rs stringForColumn:@"name"];
-//            if ([name isEqualToString:@""])
-//            {
-//                //_isEmpty = YES;
-//                continue;
-//            }
-//            char firstchar = [[name uppercaseString] characterAtIndex:0];//get first character
-//            NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar]; //convert to nsstring
-//
-//            if (![_arrayOfCharacters containsObject:(NSObject *)firstcharstring])
-//            { //if firstchar was contained
-//                [_arrayOfCharacters addObject:firstcharstring];
-//            }
-//        }
-//        [_arrayOfCharacters sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];   //将数组中的值排序
-//        [db close];
-//    }
-//    else
-//        NSLog(@"open db failed");
     [_arrayOfCharacters removeAllObjects];
     
     FMDatabase * db = [FMDatabase databaseWithPath:dbPath];

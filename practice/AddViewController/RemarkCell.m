@@ -12,6 +12,13 @@
 {
     void (^_completion)();
 }
+- (IBAction)keyboardNext:(id)sender
+{
+    if (_completion)
+    {
+        _completion();
+    }
+}
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -25,14 +32,8 @@
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
-- (void)textFieldDidEndEditing:(UITextField *)textField;
-{
-    _completion();
-}
 
 - (void)setKeyboardCompletion:(void(^)())completion
 {

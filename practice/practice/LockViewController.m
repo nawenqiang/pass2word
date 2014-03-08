@@ -21,10 +21,9 @@
 - (IBAction)login:(id)sender
 {
     NSString *pswd = [[NSUserDefaults standardUserDefaults] objectForKey:@"mainpassword"];
-    if([_passwordTextField.text isEqualToString:pswd])
+    if([_passwordTextField.text isEqualToString:pswd]) {
         [self.presentingViewController dismissViewControllerAnimated:NO completion:nil];
-    else
-    {
+    } else {
         UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"密码错误" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
         [alertV show];
     }

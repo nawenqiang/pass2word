@@ -19,5 +19,5 @@
 +(void)clearAll;
 +(void)update:(CellData*)target :(CellData*)source ;
 +(void)deleteData:(CellData*)data;
-
++ (BOOL)isHomonym:(CellData*) data;
 @end

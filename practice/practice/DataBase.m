@@ -38,6 +38,25 @@
         }
     }
 }
++ (BOOL)isHomonym:(CellData*) data
+{
+    FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
+    if ([db open])
+    {
+        NSString * sql = @"select name from  user where name = ?";
+        FMResultSet * rs = [db executeQuery:sql,data.name];
+        if([rs next])
+        {
+            return YES;
+        }
+        [db close];
+    }
+    else
+    {
+        NSLog(@"open db failed");
+    }
+    return NO;
+}
 
 +(void) cleanHomonym:(CellData*) data
 {

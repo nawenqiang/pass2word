@@ -10,8 +10,10 @@
 #import "ImageAndNameCell.h"
 #import "LabelTextFieldCell.h"
 #import "RemarkCell.h"
+#import "DataBase.h"
 
-@interface AddViewController ()<UITextViewDelegate>
+@interface AddViewController ()<UIAlertViewDelegate>
+
 @property (weak, nonatomic) IBOutlet UITableView *addTableView;
 
 @end
@@ -23,9 +25,10 @@
     UITextField *_name;
     UITextField *_account;
     UITextField *_password;
-    UITextView *_remark;
+    UITextField *_remark;
     UITextField *_website;
-    UIEdgeInsets    _old;
+    UIEdgeInsets _oldAddTableEdgeInsets;
+    CellData    *_data;
 }
 
 
@@ -46,36 +49,60 @@
     [super viewDidLoad];
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    
-    // Do any additional setup after loading the view from its nib.
     self.title = @"新账户";
     UIBarButtonItem *rightBtnItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(save)];
     self.navigationItem.rightBarButtonItem = rightBtnItem;
 }
-#pragma mark-- save Button
--(void) save
+
+- (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
+    
+    _oldAddTableEdgeInsets = self.addTableView.contentInset;
+}
 
-    CellData *data;
-    data  = [[CellData alloc] init];
+#pragma mark-- save Button
+- (void)save
+{
+//    CellData *data;
+    _data  = [[CellData alloc] init];
 
-    data.name       = _name.text;
-    data.account    = _account.text;
-    data.password   = _password.text;
-    data.remark     = _remark.text;
-    data.website    = _website.text;
-    if (!_isOperator)
+    _data.name       = _name.text;
+    _data.account    = _account.text;
+    _data.password   = _password.text;
+    _data.remark     = _remark.text;
+    _data.website    = _website.text;
+
+    if ([_data.name isEqualToString:@""])
     {
-        if ([data.name isEqualToString:@""])
-        {
-            UIAlertView * av= [[UIAlertView alloc] initWithTitle:@"提示" message:@"名称不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
-            [av show];
-            return;
-        }
+        UIAlertView * av= [[UIAlertView alloc] initWithTitle:@"提示" message:@"名称不能为空" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+        [av show];
+        return;
     }
-    [self.delegate setCellData:data];
+    if ( [DataBase isHomonym:_data])
+    {
+        UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示" message:@"" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        [av show];
+    }
+    else
+    {
+     [self.delegate setCellData:_data];
+     [self.navigationController popViewControllerAnimated:YES];
+    }
+}
 
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0)//取消
+    {
+        return;
+    }
+    else
+    {
+        [self.delegate setCellData:_data];
+        
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,6 +111,13 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)setTextFieldStyle:(UITextField *)textField
+{
+    textField.layer.cornerRadius = 4.0f;
+    textField.layer.masksToBounds = YES;
+    textField.layer.borderColor = [[UIColor colorWithRed:180.0/255.0 green:180.0/255.0 blue:180.0/255.0 alpha:1.0]CGColor];
+    textField.layer.borderWidth = 1.0f;
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -91,11 +125,6 @@
         return 2;
     else
         return 1;
-}
-#pragma mark-- textview delegate
-- (void)textViewDidBeginEditing:(UITextView *)textView
-{
-    textView.contentInset = UIEdgeInsetsMake(0, 20, 0, 0);
 }
 
 #pragma mark-- 绘制Cell
@@ -111,6 +140,9 @@
             [tableView registerNib:[UINib nibWithNibName:@"ImageAndNameCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
             cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
         }
+        
+        [self setTextFieldStyle:cell.nameTextField];
+        
         _name = cell.nameTextField;
         [cell setKeyboardCompletion:^{[_account becomeFirstResponder];}];
         if(_isOperator)
@@ -156,7 +188,10 @@
             {
                 cell.contentField.text = _cellData.password;
             }
+            cell.contentField.secureTextEntry = YES;
         }
+
+        [self setTextFieldStyle:cell.contentField];
         return cell;
     }
     else if (indexPath.section == 2)
@@ -168,13 +203,13 @@
             [tableView registerNib:[UINib nibWithNibName:@"RemarkCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
             cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
         }
-        cell.remarkTextView.delegate = self;
-        _remark = cell.remarkTextView;
         [cell setKeyboardCompletion:^{[_website becomeFirstResponder];}];
+        _remark = cell.textField;
         if(_isOperator)
         {
-            cell.remarkTextView.text = _cellData.remark;
+            cell.textField.text = _cellData.remark;
         }
+        
         return cell;
     }
     else //if (indexPath.section == 3)
@@ -185,16 +220,19 @@
         {
             [tableView registerNib:[UINib nibWithNibName:@"LabelTextFieldCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
             cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
-
         }
+        
         _website = cell.contentField;
         cell.contentLabel.text = @"网址:";
         cell.contentField.placeholder = @"网址";
         cell.contentField.text = @"http://";
+        cell.contentField.returnKeyType = UIReturnKeyDone;
+        [cell.contentField addTarget:self action:@selector(textFieldDone:) forControlEvents:UIControlEventEditingDidEndOnExit];
+        [self setTextFieldStyle:cell.contentField];
         
         [cell.contentField addTarget:self action:@selector(focusInWebSiteField) forControlEvents:UIControlEventEditingDidBegin];
+        [cell.contentField addTarget:self action:@selector(focusOutWebSiteField) forControlEvents:UIControlEventEditingDidEnd];
         
-         [cell.contentField addTarget:self action:@selector(focusOutWebSiteField) forControlEvents:UIControlEventEditingDidEnd];
         if(_isOperator)
         {
             cell.contentField.text = _cellData.website;
@@ -202,7 +240,11 @@
         return cell;
     }
  //   return nil;
-    
+}
+
+- (void)textFieldDone:(UITextField *)textField
+{
+    [textField resignFirstResponder];
 }
 
 #pragma mark --头像点击，换头像
@@ -210,7 +252,7 @@
 {
     UIActionSheet *actionSheet = [[UIActionSheet alloc]
                                   initWithTitle:nil
-                                  delegate:self
+                                  delegate:nil
                                   cancelButtonTitle:@"取消"
                                   destructiveButtonTitle:nil
                                   otherButtonTitles:@"拍照", @"本地图片", nil];
@@ -224,6 +266,10 @@
     {
         return @"附加信息:";
     }
+    if(section == 3)
+    {
+        return @"网址:";
+    }
     return @"";
 }
 
@@ -235,30 +281,36 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(indexPath.section == 0)
-        return 80;
-    else if(indexPath.section == 2)
-        return 80;
-    return 40.0;
+    if(indexPath.section == 0) {
+        return 80.0;
+    }
+
+    return 44.0;
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (section == 0)
+    if (section <= 1)
     {
-        return 1.0;
+        return 0.0001;
     }
     return 30.0;
 }
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.0001;
+}
+
 #pragma mark-- 弹起website
 - (void)focusInWebSiteField
 {
-    _old = self.addTableView.contentInset;
-    self.addTableView.contentInset = UIEdgeInsetsMake(0, 0, 280, 0);
+    self.addTableView.contentInset = UIEdgeInsetsMake(0, 0, 360, 0);
 }
 
 - (void)focusOutWebSiteField
 {
-    self.addTableView.contentInset = _old;
+    self.addTableView.contentInset = _oldAddTableEdgeInsets;
 }
 
 #pragma mark-- selfdefined method
