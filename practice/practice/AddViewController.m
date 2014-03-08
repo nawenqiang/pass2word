@@ -81,7 +81,7 @@
     }
     if ( [DataBase isHomonym:_data])
     {
-        UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示" message:@"" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
+        UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示" message:@"是否覆盖" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
         [av show];
     }
     else
