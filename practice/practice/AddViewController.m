@@ -35,6 +35,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self)
     {
+//        _cellData = [[CellData alloc] init];
         _isOperator = NO;
     }
     return self;
@@ -56,12 +57,8 @@
 -(void) save
 {
     CellData *data;
-    if(!_isOperator)
-    {
-        data  = [[CellData alloc] init];
-    }
-    else
-        data = _cellData;
+    data  = [[CellData alloc] init];
+
     data.name       = _name.text;
     data.account    = _account.text;
     data.password   = _password.text;
@@ -107,6 +104,7 @@
             cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
         }
         _name = cell.nameTextField;
+        [cell setKeyboardCompletion:^{[_account becomeFirstResponder];}];
         if(_isOperator)
         {
           cell.nameTextField.text = _cellData.name;
@@ -132,6 +130,7 @@
         if (indexPath.row == 0)
         {
             _account = cell.contentField;
+            [cell setKeyboardCompletion:^{[_password becomeFirstResponder];}];
             cell.contentLabel.text = @"账号:";
             cell.contentField.placeholder = @"账号";
             if(_isOperator)
@@ -142,6 +141,7 @@
         else if (indexPath.row == 1)
         {
             _password = cell.contentField;
+            [cell setKeyboardCompletion:^{[_remark becomeFirstResponder];}];
             cell.contentLabel.text = @"密码:";
             cell.contentField.placeholder = @"密码";
             if(_isOperator)
@@ -162,6 +162,7 @@
         }
         cell.remarkTextView.delegate = self;
         _remark = cell.remarkTextView;
+        [cell setKeyboardCompletion:^{[_website becomeFirstResponder];}];
         if(_isOperator)
         {
             cell.remarkTextView.text = _cellData.remark;
@@ -257,9 +258,5 @@
 {
     _cellData = data;
     _isOperator = YES;
-    //    _name.text      = data.name;
-    //    _account.text   = data.account;
-    //    _password.text  = data.password;
-    //    _website.text   = data.website;
 }
 @end

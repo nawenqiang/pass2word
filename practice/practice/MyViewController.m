@@ -11,9 +11,10 @@
 #import "SettingViewController.h"
 #import "CellData.h"
 #import "MyDetailViewController.h"
+#import "FMDatabase.h"
+#import "DataBase.h"
 
-
-@interface MyViewController ()<MyDetailViewControllerDelegate>
+@interface MyViewController ()<UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *myTableView;
 
 @end
@@ -21,10 +22,8 @@
 @implementation MyViewController
 {
     NSMutableArray *_temparray;          //section data
-    NSMutableArray *_myArray;            //total data
     NSMutableArray *_arrayOfCharacters;  //section title
     BOOL    _isEmpty;
-    int     _totalCustomer;
 }
 
 
@@ -34,11 +33,8 @@
     if (self)
     {   // Custom initialization
         _temparray  = [[NSMutableArray alloc] init];
-        _myArray    = [[NSMutableArray alloc] init];
         _arrayOfCharacters  = [[NSMutableArray alloc] init];
         _isEmpty = NO;
-        _totalCustomer = 0;
-
     }
     return self;
 }
@@ -47,34 +43,24 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    self.title = @"所有用户（0）";
-    UIBarButtonItem *rightBtnItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(add)];
-    self.navigationItem.rightBarButtonItem = rightBtnItem;
+//    [DataBase clearAll];
+    //create table
+    [DataBase createTable];
+    self.title = [NSString stringWithFormat:@"所有用户（%d）",[DataBase getTotalNumbers]];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"添加" style:UIBarButtonSystemItemAction target:self action:@selector(add)];
+
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"设置" style:UIBarButtonSystemItemAction target:self action:@selector(settingView)];
-    [self updateArrayOfCharacters];
 }
+
+#pragma mark-- setting button
 -(void)settingView
 {
     SettingViewController *settingView = [[SettingViewController alloc] init];
     [self.navigationController pushViewController:settingView animated:YES];
 }
-#pragma mark--MyDetailViewControllerDelegate
--(void) sendID:(NSInteger) data
-{
-    for (CellData* cd in _myArray)
-    {
-        if(cd.ID == data)
-        {
-            [_myArray removeObjectAtIndex:data];
-            [self updateArrayOfCharacters];
-            _totalCustomer --;
-            self.title = [NSString stringWithFormat:@"所有用户（%d）",_totalCustomer];
-            [_myTableView reloadData];
-        }
-        break;
-    }
-}
+
+
 #pragma mark-- add Button
 -(void)add
 {
@@ -83,35 +69,13 @@
     [self.navigationController pushViewController:addvc animated:YES];
 }
 
--(void) updateArrayOfCharacters
-{
-    _isEmpty = NO;
-    [_arrayOfCharacters removeAllObjects];
-    for (CellData *data in _myArray)
-    {
-        if ([data.name isEqualToString:@""])
-        {
-            _isEmpty = YES;
-            continue;
-        }
 
-        char firstchar = [[data.name uppercaseString] characterAtIndex:0];//get first character
-        NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar]; //convert to nsstring
-        if (![_arrayOfCharacters containsObject:(NSObject *)firstcharstring])
-        { //if firstchar was contained
-            [_arrayOfCharacters addObject:firstcharstring];
-        }
-    }
-    [_arrayOfCharacters sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];   //将数组中的值排序
-}
 #pragma mark-- addview delegate
 - (void)setCellData:(CellData *)data;
 {
-    [_myArray addObject:data];
-    data.ID = _totalCustomer;
-    _totalCustomer ++;
-
-    self.title = [NSString stringWithFormat:@"所有用户（%d）",_totalCustomer];
+    //db insert
+    [DataBase insert: data];
+    self.title = [NSString stringWithFormat:@"所有用户（%d）",[DataBase getTotalNumbers]];
     [self updateArrayOfCharacters];
     [self.myTableView reloadData];
 }
@@ -122,15 +86,23 @@
     // Dispose of any resources that can be recreated.
 }
 
-
+//解决点击操作修改后界面不刷新问题
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    [self updateArrayOfCharacters];
+    self.title = [NSString stringWithFormat:@"所有用户（%d）",[DataBase getTotalNumbers]];
     [_myTableView reloadData];
 }
 
 
-#pragma mark --  number of section
+#pragma mark --  section
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    [self updateTempArray:section];
+    return [_temparray count];
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     if ([_arrayOfCharacters count])
@@ -143,39 +115,6 @@
     else
     {
         return 1;
-    }
-}
-#pragma mark --  row numbers of every section
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    [self getTempArray:_myArray andSection:section];
-    return [_temparray count];
-}
-
--(void)getTempArray:(NSMutableArray*)fromArray andSection:(NSInteger)section
-{
-    [_temparray removeAllObjects];
-    //遍历数组找到匹配分组
-    for (CellData* objstr in fromArray)
-    {
-        if (section >= [_arrayOfCharacters count] && [objstr.name isEqualToString:@""])
-        {
-            [_temparray addObject:objstr];
-        }
-        else if(section < [_arrayOfCharacters count] && ![objstr.name isEqualToString:@""])
-        {
-            //title of section
-            NSString *key = [_arrayOfCharacters objectAtIndex:section];
-            //get first character
-            char firstchar = [[objstr.name uppercaseString] characterAtIndex:0];
-            //convert to NSstring
-            NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar];
-            if ([firstcharstring isEqualToString:key])
-            {
-                [_temparray addObject:objstr];
-            }            
-        }
-
     }
 }
 
@@ -199,20 +138,12 @@
         [tableView registerNib:[UINib nibWithNibName:@"MyTableViewCell" bundle:nil] forCellReuseIdentifier:cellIdentify];
         cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
     }
-    if([_temparray count])
-    {
-       [self getTempArray:_myArray andSection:indexPath.section];//每用一次之前,需要重新给临时数组添加匹配当前key的记录
-        CellData *cellData = [_temparray objectAtIndex:indexPath.row];
-        cell.nameLabel.text     = cellData.name;
-        cell.accountTextField.text  = cellData.account;
-    }
-    else
-    {
-        CellData *cellData = [_myArray objectAtIndex:indexPath.row];
-        cell.nameLabel.text     = cellData.name;
-        cell.accountTextField.text  = cellData.account;
 
-    }
+    [self updateTempArray: indexPath.section];//每用一次之前,需要重新给临时数组添加匹配当前key的记录
+    CellData *cellData = [_temparray objectAtIndex:indexPath.row];
+    cell.nameLabel.text     = cellData.name;
+    cell.accountTextField.text  = cellData.account;
+
 
     return cell;
 }
@@ -224,6 +155,7 @@
     for(char c = 'A';c<='Z';c++)
         [toBeReturned addObject:[NSString stringWithFormat:@"%c",c]];
     return toBeReturned;
+
 }
 #pragma mark-- 表格height
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -236,12 +168,92 @@
 {
     // Create the next view controller.
     MyDetailViewController *detailViewController = [[MyDetailViewController alloc] init];
-    detailViewController.delegate = self;
-    [self getTempArray:_myArray andSection:indexPath.section];
+    [self updateTempArray: indexPath.section];
     CellData *cData = [_temparray objectAtIndex:indexPath.row];
     // Push the view controller.
     [self.navigationController pushViewController:detailViewController animated:YES];
     [detailViewController getData:cData ];
+
+}
+#pragma mark-- selfdefined method
+-(void)updateTempArray:(NSInteger)section
+{
+    [_temparray removeAllObjects];
+    FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
+    if ([db open])
+    {
+        CellData *data;
+        NSString * sql = @"select * from user";
+        FMResultSet * rs = [db executeQuery:sql];
+        while ([rs next])
+        {
+            data = [[CellData alloc] init];
+            NSString *ns = [rs stringForColumn:@"name"];
+            NSString *at = [rs stringForColumn:@"account"];
+            NSString *pswd = [rs stringForColumn:@"password"];
+            NSString *remark = [rs stringForColumn:@"remark"];
+            NSString *ws = [rs stringForColumn:@"website"];
+
+            data.name = ns;
+            data.account = at;
+            data.password = pswd;
+            data.remark = remark;
+            data.website = ws;
+            if (section >= [_arrayOfCharacters count] && [ns isEqualToString:@""])
+            {
+                [_temparray addObject:data];
+            }
+            else if(section < [_arrayOfCharacters count] && ![ns isEqualToString:@""])
+            {
+                //title of section
+                NSString *key = [_arrayOfCharacters objectAtIndex:section];
+                //get first character
+                char firstchar = [[ns uppercaseString] characterAtIndex:0];
+                //convert to NSstring
+                NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar];
+                if ([firstcharstring isEqualToString:key])
+                {
+                    [_temparray addObject:data];
+                }
+            }
+        }
+        [db close];
+    }
+    else
+    {
+        NSLog(@"open db failed");
+    }
+}
+-(void) updateArrayOfCharacters
+{
+//    _isEmpty = NO;
+    [_arrayOfCharacters removeAllObjects];
+    
+    FMDatabase * db = [FMDatabase databaseWithPath:dbPath];
+    if ([db open])
+    {
+        NSString * sql = @"select name from user";
+        FMResultSet * rs = [db executeQuery:sql];
+        while ([rs next])
+        {
+            NSString * name = [rs stringForColumn:@"name"];
+//            if ([name isEqualToString:@""])
+//            {
+//                _isEmpty = YES;
+//                continue;
+//            }
+            char firstchar = [[name uppercaseString] characterAtIndex:0];//get first character
+            NSString *firstcharstring = [NSString stringWithFormat:@"%c",firstchar]; //convert to nsstring
+            if (![_arrayOfCharacters containsObject:(NSObject *)firstcharstring])
+            { //if firstchar was contained
+                [_arrayOfCharacters addObject:firstcharstring];
+            }
+        }
+        [_arrayOfCharacters sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];   //将数组中的值排序
+        [db close];
+    }
+    else
+        NSLog(@"open db failed");
 
 }
 

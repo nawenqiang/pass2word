@@ -14,10 +14,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="bezel" placeholder="名称" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="baV-fa-fUu">
-                        <rect key="frame" x="119" y="20" width="105" height="38"/>
+                        <rect key="frame" x="119" y="20" width="181" height="38"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits"/>
+                        <connections>
+                            <action selector="keyboardNext:" destination="xVe-Eo-yvv" eventType="editingDidEndOnExit" id="ZgZ-3O-OcE"/>
+                        </connections>
                     </textField>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="avatar.png" translatesAutoresizingMaskIntoConstraints="NO" id="ciF-LL-NYf">
                         <rect key="frame" x="15" y="10" width="60" height="60"/>

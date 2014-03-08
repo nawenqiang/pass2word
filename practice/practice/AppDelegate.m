@@ -8,7 +8,7 @@
 
 #import "AppDelegate.h"
 #import "MyViewController.h"
-
+#import "define.h"
 
 @implementation AppDelegate
 {
@@ -17,7 +17,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //set dabase path
+    NSString * doc = PATH_OF_DOCUMENT;
+    dbPath = [doc stringByAppendingPathComponent:@"us.sqlite"];
+    
     _lvc = [[LockViewController alloc] init];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     MyViewController  *myvc = [[MyViewController alloc] init];

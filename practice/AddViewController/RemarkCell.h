@@ -10,5 +10,5 @@
 
 @interface RemarkCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UITextView *remarkTextView;
-
+- (void)setKeyboardCompletion:(void(^)())completion;
 @end

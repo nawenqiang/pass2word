@@ -11,5 +11,5 @@
 @interface ImageAndNameCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UIImageView *avatarImageView;
 @property (weak, nonatomic) IBOutlet UITextField *nameTextField;
-
+- (void)setKeyboardCompletion:(void(^)())completion;
 @end

@@ -9,12 +9,23 @@
 #import "ImageAndNameCell.h"
 
 @implementation ImageAndNameCell
-
+{
+    void (^_completion)();
+}
+- (IBAction)keyboardNext:(id)sender
+{
+    _completion();
+}
+- (void)setKeyboardCompletion:(void(^)())completion
+{
+    _completion = completion;
+}
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        // Initialization code
+    if (self)
+    {
+        _completion = ^{};
     }
     return self;
 }

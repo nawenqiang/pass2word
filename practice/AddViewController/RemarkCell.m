@@ -9,12 +9,15 @@
 #import "RemarkCell.h"
 
 @implementation RemarkCell
+{
+    void (^_completion)();
+}
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Initialization code
+        _completion = ^{};
     }
     return self;
 }
@@ -26,4 +29,13 @@
     // Configure the view for the selected state
 }
 
+- (void)textFieldDidEndEditing:(UITextField *)textField;
+{
+    _completion();
+}
+
+- (void)setKeyboardCompletion:(void(^)())completion
+{
+    _completion = completion;
+}
 @end

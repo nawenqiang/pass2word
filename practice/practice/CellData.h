@@ -10,5 +10,4 @@
 
 @interface CellData : NSObject
 @property NSString *name,*account,*password,*remark,*website;
-@property  NSInteger ID;
 @end

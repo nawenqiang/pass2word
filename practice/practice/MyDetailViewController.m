@@ -12,6 +12,7 @@
 #import "CellData.h"
 #import "AddViewController.h"
 #import "DetailRemarkCell.h"
+#import "DataBase.h"
 
 @interface MyDetailViewController ()<UIActionSheetDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *detailTableView;
@@ -48,7 +49,7 @@
 #pragma mark-- actionsheet delegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if(buttonIndex == 0)
+    if(buttonIndex == 0)//modify
     {
         AddViewController *addvc = [[AddViewController alloc] init];
         addvc.delegate = self;
@@ -57,9 +58,9 @@
         [addvc getData:_cellData];        
 
     }
-    else if(buttonIndex == 1)
+    else if(buttonIndex == 1)//delete
     {
-        [_delegate sendID:_cellData.ID];
+        [DataBase deleteData:_cellData];
         [self.navigationController popToRootViewControllerAnimated:YES];
     }
 }
@@ -72,10 +73,8 @@
 #pragma mark-- AddViewControllerDelegate
 - (void)setCellData:(CellData *)data
 {
-//    _cellData.name = data.name;
-//    _cellData.account = data.account;
-//    _cellData.password = data.password;
-//    _cellData.website = data.website;
+    [DataBase update:data :_cellData];
+    _cellData = data;
     [self.detailTableView reloadData];
 }
 
